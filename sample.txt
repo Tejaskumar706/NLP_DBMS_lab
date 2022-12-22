@@ -1,0 +1,163 @@
+Our Feet Wet
+[ 56 ]
+The necessary models can be downloaded using the following code:
+%%bash
+polyglot download morph2.en morph2.ar
+[polyglot_data] Downloading package morph2.en to
+[polyglot_data] /home/rmyeid/polyglot_data...
+[polyglot_data] Package morph2.en is already up-to-date!
+[polyglot_data] Downloading package morph2.ar to
+[polyglot_data] /home/rmyeid/polyglot_data...
+[polyglot_data] Package morph2.ar is already up-to-date!
+Consider an example that is used to obtain an output from polyglot:
+from polyglot.text import Text, Word
+tokens =["unconditional" ,"precooked", "impossible", "painful", 
+"entered"]
+for s in tokens:
+s=Word(s, language="en")
+print("{:<20}{}".format(s,s.morphemes))
+unconditional['un','conditional']
+precooked['pre','cook','ed']
+impossible['im','possible']
+painful['pain','ful']
+entered['enter','ed']
+If tokenization is not performed properly, then we can perform morphological 
+analysis for the process of splitting the text into the original constituents:
+sent="Ihopeyoufindthebookinteresting"
+para=Text(sent)
+para.language="en"
+para.morphemes
+WordList(['I','hope','you','find','the','book','interesting'])
+Morphological analyzer
+Morphological analysis may be defined as the process of obtaining grammatical 
+information from tokens, given their suffix information. Morphological analysis can be 
+performed in three ways: morpheme-based morphology (or anitem and arrangement 
+approach), lexeme-based morphology (or an item and process approach), and word-
+based morphology (or a word and paradigm approach). A morphological analyzer 
+may be defined as a program that is responsible for the analysis of the morphology of a 
+given input token. It analyzes a given token and generates morphological information, 
+such as gender, number, class, and so on, as an output.
+Chapter 3
+[ 57 ]
+In order to perform morphological analysis on a given non-whitespace token, 
+the pyEnchant dictionary is used.
+Let's consider the following code that performs morphological analysis:
+>>> import enchant
+>>> s = enchant.Dict("en_US")
+>>> tok=[]
+>>> def tokenize(st1):
+if not st1:return
+for j in xrange(len(st1),-1,-1):
+if s.check(st1[0:j]):
+tok.append(st1[0:i])
+st1=st[j:]
+tokenize(st1)
+break
+>>> tokenize("itismyfavouritebook")
+>>> tok
+['it', 'is', 'my','favourite','book']
+>>> tok=[ ]
+>>> tokenize("ihopeyoufindthebookinteresting")
+>>> tok
+['i','hope','you','find','the','book','interesting']
+We can determine the category of the word with the help of the following points:
+• Morphological hints: The suffix's information helps us detect the category 
+of a word. For example, the -ness and –ment suffixes exist with nouns.
+• Syntactic hints: Contextual information is conducive to determine the 
+category of a word. For example, if we have found the word that has the 
+noun category, then syntactic hints will be useful for determining whether 
+an adjective would appear before the noun or after the noun category.
+• Semantic hints: A semantic hint is also useful for determining the word's 
+category. For example, if we already know that a word represents the name 
+of a location, then it will fall under the noun category.
+• Open class: This is class of words that are not fixed, and their number keeps 
+on increasing every day, whenever a new word is added to their list. Words 
+in the open class are usually nouns. Prepositions are mostly in a closed class. 
+For example, there can be an unlimited number of words in the of Persons 
+list. So, it is an open class.
+• Morphology captured by the Part of Speech tagset: The Part of Speech 
+tagset captures information that helps us perform morphology. For example, 
+the word plays would appear with the third person and a singular noun.
+Morphology – Getting Our Feet Wet
+[ 58 ]
+• Omorfi:Omorfi (Open morphology of Finnish) is a package that has 
+been licensed by GNU GPL version 3. It is used for performing numerous 
+tasks, such as language modeling, morphological analysis, rule-based 
+machine translation, information retrieval, statistical machine translation, 
+morphological segmentation, ontologies, and spell checking and correction.
+Morphological generator
+A morphological generator is a program that performs the task of morphological 
+generation. Morphological generation may be considered an opposite task of 
+morphological analysis. Here, given the description of a word in terms of number, 
+category, stem, and so on, the original word is retrieved. For example, if root = go, 
+part of speech = verb, tense= present, and if it occurs along with a third person and 
+singular subject, then a morphological generator would generate its surface 
+form, goes.
+There is a lot of Python-based software that performs morphological analysis and 
+generation. Some of them are as follows:
+• ParaMorfo: It is used to perform morphological generation and analysis of 
+Spanish and Guarani nouns, adjectives, and verbs.
+• HornMorpho: It is used for the morphological generation and analysis of 
+Oromo and Amharic nouns and verbs, as well as Tigrinya verbs.
+• AntiMorfo: It is used for the morphological generation and analysis of 
+Quechua adjectives, verbs, and nouns, as well as Spanish verbs.
+• MorfoMelayu: It is used for the morphological analysis of Malay words.
+Other examples of software that is used to perform morphological analysis and 
+generation are as follows:
+• Morph is a morphological generator and analyzer for English for the RASP 
+system
+• Morphy is a morphological generator, analyzer, and POS tagger for German
+• Morphisto is a morphological generator and analyzer for German
+• Morfette performs supervised learning (inflectional morphology) for Spanish 
+and French
+Chapter 3
+[ 59 ]
+Search engine
+PyStemmer 1.0.1 consists of Snowball stemming algorithms that are used for 
+performing information retrieval tasks and for constructing a search engine. It 
+consists of the Porter stemming algorithm and many other stemming algorithms 
+that are useful for performing stemming and information retrieval tasks in many 
+languages, including many European languages.
+We can construct a vector space search engine by converting the texts into vectors.
+The following are the steps involved in constructing a vector space search engine:
+1. Consider the following code for the removal of stopwords and tokenization:
+A stemmer is a program that accepts words and converts them into stems. 
+Tokens that have the same stem have nearly the same meanings. Stopwords 
+are also eliminated from a text.
+def eliminatestopwords(self,list):
+"""
+Eliminate words which occur often and have not much significance 
+from context point of view.
+"""
+return[ word for word in list if word not in self.stopwords ]
+def tokenize(self,string):
+"""
+Perform the task of splitting text into stop words and tokens
+"""
+Str=self.clean(str)
+Words=str.split("")
+return [self.stemmer.stem(word,0,len(word)-1) for word in words]
+2. Consider the following code for mapping keywords into vector dimensions:
+def obtainvectorkeywordindex(self, documentList):
+"""
+In the document vectors, generate the keyword for the given 
+position of element
+"""
+#Perform mapping of text into strings
+vocabstring = "".join(documentList)
+vocablist = self.parser.tokenise(vocabstring)
+Morphology – Getting Our Feet Wet
+[ 60 ]
+#Eliminate common words that have no search significance
+vocablist = self.parser.eliminatestopwords(vocablist)
+uniqueVocablist = util.removeDuplicates(vocablist)
+vectorIndex={}
+ offset=0
+#Attach a position to keywords that performs mapping with 
+dimension that is used to depict this token
+ for word in uniqueVocablist:
+vectorIndex[word]=offset
+offset+=1
+ return vectorIndex #(keyword:position)
+3. Here, a simple term count model is used. Consider the following code for the 
+conversion of text strings into
